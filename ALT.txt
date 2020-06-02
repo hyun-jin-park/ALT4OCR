@@ -1,0 +1,289 @@
+//*******************************************************
+// Image labelling tool for Detectnet dataset v1.0.0
+// Alper ALTINOK, 2017
+// ******************************************************
+// If you want to label objects with other then "car",
+// then simply find "car" word in this code somewhere down below
+// and change it to any custom dataset label you want.
+// This version of macro is not designed to preserve multiple labels
+// like (car, vehicle, pedestrian, etc). Useful only for 
+// single label usage.
+//*******************************************************
+// Action Bar description file :A.L.T
+
+<codeLibrary>
+
+    function indexOfArray(array, value) {
+        for (a=0; a<lengthOf(array); a++) {
+            if (array[a]==value) {
+                return a;
+            }
+        }
+        return -1;
+    }
+
+    function set_and_zoom(){
+        setTool("oval");
+        run("In [+]");
+        run("In [+]");    
+    }    
+
+    function save_result(mainTitle){
+        output_dir = getDirectory("image");
+        setBatchMode(true);
+        if (isOpen("Results")) { 
+            title1 = "annotation_table";
+            title2 = "[" + title1 + "]";
+            run("New... ", "name=" + title2 + " type=Table"); 
+
+            setBatchMode(true);
+            selectWindow("Results");
+            for (row=0; row<nResults; ++row) { 
+                bx1=getResult("BX",row);
+                by1=getResult("BY",row);;
+                width=getResult("Width",row);
+                height=getResult("Height",row);
+                labeltype=getResultString("Label",row);
+                bx2=bx1+width;
+                by2=by1+height;
+                print(title2,labeltype + "\t" + bx1 + "\t" + by1 + "\t" + bx2+ "\t" + by2);
+            }
+            selectWindow(title1);
+            newtitle = replace(mainTitle, ".png", ".txt");
+            saveAs("text", output_dir + File.separator + newtitle);
+            selectWindow(title1);
+            run("Close");
+
+            selectWindow("Results");
+            run("Close");
+        }
+    }
+
+    function close_all(){
+        if (isOpen("Results")) { 
+            selectWindow("Results"); 
+            run("Clear Results");
+            selectWindow("Results"); 
+            run("Close");
+        }
+
+        if (isOpen("Log")) { 
+            selectWindow("Log"); 
+            run("Close"); 
+        }
+
+        list = getList("window.titles"); 
+        for (i=0; i<list.length; i++){ 
+            winame = list[i]; 
+            selectWindow(winame); 
+            if (winame!="new action bar"){
+                run("Close"); 
+            }	 
+        }
+    }
+
+    function read_annotation_file(filepath){
+        open(filepath);
+        selectWindow(File.name);
+        getLocationAndSize(x, y, width, height);
+        setLocation(screenWidth/2 - width/2, 10, width*(screenHeight-40)/height, screenHeight-40); 
+    
+        temp = File.nameWithoutExtension;
+        fn = File.name;
+        path = File.directory;
+        textPath = path+temp+".txt";
+        call("ij.Prefs.set", "my.path", path);
+        call("ij.Prefs.set", "my.filename", fn);
+
+        if (File.exists(textPath)) {            
+            lineseparator = "\n";
+            cellseparator = "\t";
+            lines=split(File.openAsString(textPath), lineseparator);     
+            header = newArray("label\tx1\ty1\tx2\ty2\t");
+            lines = Array.concat(header,lines);
+            labels=split(lines[0], cellseparator);
+
+            if (labels[0]==" ")
+                k=1; // it is an ImageJ Results table, skip first column
+            else
+                k=0; // it is not a Results table, load all columns
+
+            j=k;
+            // dispatches the data into the new RT
+            run("Clear Results");
+            for (i=1; i<lines.length; i++) {
+                items=split(lines[i], cellseparator);
+                for (j=k; j<items.length; j++)
+                    setResult(labels[j],i-1,items[j]);
+            }
+            updateResults();
+
+            for (row=0; row<nResults; ++row) { 
+                bx1=getResult("x1",row);
+                by1=getResult("y1",row);;
+                bx2=getResult("x2",row);
+                by2=getResult("y2",row);
+                width=bx2-bx1;
+                height=by2-by1;
+    //          makeRectangle(bx1,by1,width,height);
+                makeOval(bx1, by1, width, height);
+                labeltype=getResultString("label",row);
+                Roi.setStrokeWidth(5);
+                Roi.setStrokeColor('green');
+                roiManager("Add");
+                roiManager("select", row)
+                roiManager("rename", labeltype);
+            }
+
+            roiManager("show all with labels")
+            if (isOpen("Results")){ 
+                selectWindow("Results"); 
+                run("Close"); 
+            }
+
+            if (lines.length > 1) 
+                roiManager("select", 0);
+
+        }else{
+            roiManager("show all with labels");
+        }
+        set_and_zoom();
+    }
+
+    function clear_all(){
+        run("Clear Results");
+        close("*");
+        if (isOpen("ROI Manager")) {
+            selectWindow("ROI Manager");
+            run("Close");
+        } 
+    }
+
+    function get_image_list(myPath){                
+        list = getFileList(myPath);
+        imglist = newArray();
+        for (i=0; i<list.length; ++i) {
+            if (endsWith(list[i], ".jpg") || endsWith(list[i], ".png") || endsWith(list[i], ".jpeg")) {
+                imglist=Array.concat(imglist,list[i]);
+            }
+        }
+        return imglist;
+    }
+
+    function update_measurements(mainTitle){
+        var u;
+        
+        run("Set Measurements...", "bounding display redirect=mainTitle decimal=3");
+        for (u=0; u<roiManager("count"); ++u) {
+            roiManager("Select", u);
+            roiManager("measure");
+        } 
+
+        for (i=0; i<nResults; i++) {
+            oldLabel = getResultLabel(i);
+            delimiter = indexOf(oldLabel, ":");
+            newLabel = substring(oldLabel, delimiter+1);
+            setResult("Label", i, newLabel);
+        }
+    }   
+
+</codeLibrary>
+
+<line>
+<button> 1 line 1
+label=Choose an image file to start/continue labeling
+icon=kitti label/image1_1.png
+arg=<macro>
+
+macro "open file and roi - C0a0L18f8L818e" {
+    clear_all();
+    filepath=File.openDialog("CHOOSE THE IMAGE TO EDIT / CREATE LABELS");
+    read_annotation_file(filepath);
+    set_and_zoom();
+}
+
+</macro>
+
+
+<button> 2 line 1
+label= save edited labels
+icon=kitti label/image2_1.png
+arg=<macro>
+
+    mainTitle = getTitle();
+    update_measurements(mainTitle)
+    save_result(mainTitle);		
+
+</macro>
+
+
+<button> 3 line 1
+label= Save label and close image
+icon=kitti label/image3_1.png
+arg=<macro>
+
+    mainTitle = getTitle();
+    update_measurements(mainTitle);
+    save_result(mainTitle);
+    close_all();
+
+</macro>
+
+
+<button> 5 line 1
+label=Prev image (jpeg or png)
+icon=kitti label/image6_2.png
+arg=<macro>  
+
+    myPath = call("ij.Prefs.get", "my.path", 0);
+    myFilename = call("ij.Prefs.get", "my.filename", 1);
+    imglist = get_image_list(myPath);
+    fileorder = indexOfArray(imglist, myFilename);
+    if (fileorder > 0) {
+        fileorder = fileorder - 1;
+    }else {
+        fileorder = imglist.length - 1;
+    }
+    myFilename=imglist[fileorder]; 
+
+    clear_all();
+    read_annotation_file(myPath+File.separator+myFilename);
+
+</macro>
+
+
+<button> 6 line 1
+label=Next image (jpeg or png)
+icon=kitti label/image6_1.png
+arg=<macro>  
+
+    myPath = call("ij.Prefs.get", "my.path", 0);
+    myFilename = call("ij.Prefs.get", "my.filename", 1);
+    imglist = get_image_list(myPath);
+    fileorder=indexOfArray(imglist, myFilename);        
+    if (fileorder < imglist.length-1) {
+        fileorder = fileorder + 1;
+    }else {
+        fileorder = 0;
+    }
+    myFilename=imglist[fileorder];
+
+    clear_all(); 
+    read_annotation_file(myPath+File.separator+myFilename);
+</macro>
+
+
+<button> 7 line 1
+label=Brought to you by..
+icon=kitti label/image4_1.png
+arg=<macro> 
+
+    showMessage("Image Labelling Tool", "<html>"
+        +   "ImageJ Image Labelling Tool v1.0 for Detectnet datasets<br>"
+        +   "Macro code concatenated by Alper ALTINOK<br>"
+        +   "Feel free to modify the code to your needs<br>"
+        +   "Please keep original author's name, Thanks for using ")
+     
+</macro>
+</line>
+// end of file
