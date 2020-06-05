@@ -23,8 +23,7 @@
     }
 
     function set_and_zoom(){
-        setTool("Polygon");
-        run("In [+]");        
+        setTool("Rectangle");        
     }    
 
     function save_result(mainTitle){
@@ -88,7 +87,7 @@
             for (i=0; i<lines.length; i++) {
                 items=split(lines[i], cellseparator);
                 makePolygon(items[1], items[2], items[3], items[4], items[5], items[6], items[7], items[8]);
-                Roi.setStrokeWidth(2);
+                Roi.setStrokeWidth(1);
                 Roi.setStrokeColor('green');
                 Roi.setName(items[0]);
                 roiManager("Add");                
@@ -122,16 +121,30 @@
     }
 
     function add_polygon_rectangle(){
-        getSelectionCoordinates(x, y);
-        bx = newArray()
-        by = newArray()
-
+        getSelectionCoordinates(x, y);    
+        
         if (x.length < 4){
 	        exit('Box label need 4 point')
         }else{
 	        makePolygon(x[0], y[0], x[1], y[1], x[2], y[2], x[3], y[3]);
         }
         roiManager("Add");
+    }
+
+    function delete_rectangle(){
+        setBatchMode(true);
+        Roi.getBounds(x,y, width, height);
+        bottom_right_x = x + width;
+        bottom_right_y = y + height ; 
+        nCount = roiManager('count');
+        for (i = nCount-1 ; i >= 0 ; i --){
+	        roiManager('select', i);
+	        Roi.getBounds(bx, by, bwidth, bheight)	
+	        if( x <= bx && y<= by && bx + bwidth < bottom_right_x && by+bheight < bottom_right_y){
+		        roiManager('delete'); 
+		        Roi.remove;
+	        }
+        }
     }
 
 </codeLibrary>
@@ -228,16 +241,12 @@ arg=<macro>
 
 
 <button> 7 line 1
-label=Brought to you by..
-icon=kitti label/image4_1.png
+label= delete rectangle
+icon=kitti label/delete.png
 arg=<macro> 
 
-    showMessage("Image Labelling Tool", "<html>"
-        +   "ImageJ Image Labelling Tool v1.0 for Detectnet datasets<br>"
-        +   "Macro code concatenated by Alper ALTINOK<br>"
-        +   "Feel free to modify the code to your needs<br>"
-        +   "Please keep original author's name, Thanks for using ")
-     
+    delete_rectangle();
+
 </macro>
 </line>
 // end of file
