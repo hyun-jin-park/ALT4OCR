@@ -1,17 +1,3 @@
-//*******************************************************
-// Image labelling tool for Detectnet dataset v1.0.0
-// Alper ALTINOK, 2017
-// ******************************************************
-// If you want to label objects with other then "car",
-// then simply find "car" word in this code somewhere down below
-// and change it to any custom dataset label you want.
-// This version of macro is not designed to preserve multiple labels
-// like (car, vehicle, pedestrian, etc). Useful only for 
-// single label usage.
-//*******************************************************
-// Action Bar description file :A.L.T
-
-<codeLibrary>
 function read_annotation_file(filepath){
         open(filepath);
         selectWindow(File.name);
@@ -242,65 +228,35 @@ function alt_find(){
         Roi.setFillColor(old_fill_color);
     }
 }
-</codeLibrary>
 
-<line>
-<button> 1 line 1
-label=Choose an image file to start/continue labeling
-icon=alt/open.png
-arg=<macro>
+macro "Open file... [o]" {
     alt_open();
-</macro>
+}
 
+macro "Save file... [s]"{
+    alt_save();		
+}
 
-<button> 2 line 1
-label= save edited labels
-icon=alt/save.png
-arg=<macro>
-    alt_save();
-</macro>
+macro "Prev image... [p]"{
+    alt_prev();
+}
 
-<button> 3 line 1
-label=Prev image (jpeg or png)
-icon=alt/prev.png
-arg=<macro>  
-     alt_prev();
-</macro>
-
-
-<button> 4 line 1
-label=Next image (jpeg or png)
-icon=alt/next.png
-arg=<macro>  
+macro "Next image... [n]"{
     alt_next();
-</macro>
+}
 
-<button> 5 line 1
-label= add label
-icon=alt/add.png
-arg=<macro>
+macro "Add polygon... [a]"{
     alt_add();
-</macro>
+}
 
-<button> 6 line 1
-label= delete rectangle
-icon=alt/delete.png
-arg=<macro> 
+macro "Delete polygon... [d]"{
     alt_delete();
-</macro>
+}
 
-<button> 7 line 1
-label= edit label
-icon=alt/edit.png
-arg=<macro> 
+macro "update polygon... [e]"{
     alt_edit();
-</macro>
+}
 
-<button> 8 line 1
-label= find region
-icon=alt/find.png
-arg=<macro> 
+macro "Find polygon... [f]"{
     alt_find();
-</macro>
-</line>
-// end of file
+}
