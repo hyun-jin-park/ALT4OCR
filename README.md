@@ -38,3 +38,11 @@
 | `delete` | ![delete](icons/alt/delete.png) |     d     | delete selected annotation                                                                    |
 | `edit`   |   ![edit](icons/alt/edit.png)   |     e     | edit selected region's label                                                                  |
 | `find`   |   ![find](icons/alt/find.png)   |     f     | make selected region flickering (use this function after select label in Roi Manager window) |
+
+### Tip
+If you want read utf-8 label file in windows 10, change imageJ.cfg like this
+```
+.
+jre\bin\javaw.exe
+-Dfile.encoding=UTF8 -Xmx24540m -cp ij.jar ij.ImageJ 
+```
