@@ -8,8 +8,8 @@
    - If there is not ActionBar folder under ImageJ>Plugins, create it    
    -[option] If you want to use keyboard short cut, move ALT_toolset.txt to ImageJ/macro/toolsets/    
 4. register this actionbar macro as auto run 
-4.1 Click Edit > Options > Startup   
-4.2 Paste this command  
+ - 4.1 Click Edit > Options > Startup   
+ - 4.2 Paste this command  
 ```
      run("Action Bar","/plugins/ActionBar/ALT.txt");  
 ```
