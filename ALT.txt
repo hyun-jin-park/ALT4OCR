@@ -29,6 +29,7 @@ function read_annotation_file(filepath){
         if (File.exists(textPath)) {            
             lineseparator = "\n";
             cellseparator = "\t";
+			//cellseparator = ",";
             lines=split(File.openAsString(textPath), lineseparator);                        
 
             // dispatches the data into the new RT
@@ -36,12 +37,17 @@ function read_annotation_file(filepath){
             for (i=0; i<lines.length; i++) {
                 items=split(lines[i], cellseparator);
                 makePolygon(items[1], items[2], items[3], items[4], items[5], items[6], items[7], items[8]);
+				//makePolygon(items[0], items[1], items[2], items[3], items[4], items[5], items[6], items[7]);
                 Roi.setStrokeWidth(1);
                 Roi.setStrokeColor('green');
                 Roi.setName(items[0]);
+				//Roi.setName(items[8]);
                 roiManager("Add");
+                roiManager("Select", roiManager("Count") -1);
+                roiManager("Rename", label);
             }
             roiManager("show all");
+			roiManager("UseNames", "true");
             if (lines.length > 1) 
                 roiManager("select", 0);
 
@@ -180,6 +186,8 @@ function alt_add(){
             label = Dialog.getString();
             Roi.setName(label);
             roiManager("Add");
+            roiManager("Select", roiManager("Count") -1);
+            roiManager("Rename", label);
             roiManager("show all");
         }
     }
