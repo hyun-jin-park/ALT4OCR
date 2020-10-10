@@ -8,11 +8,11 @@
    - If there is not ActionBar folder under ImageJ>Plugins, create it    
    -[option] If you want to use keyboard short cut, move ALT_toolset.txt to ImageJ/macro/toolsets/    
 4. register this actionbar macro as auto run 
-  4.1 Click Edit > Options > Startup 
-  4.2 Paste this command  
-`
+ - 4.1 Click Edit > Options > Startup   
+ - 4.2 Paste this command  
+```
      run("Action Bar","/plugins/ActionBar/ALT.txt");  
-`
+```
 5. restart ImageJ 
 
 6. [option] If you want use keyboard short cut
@@ -38,3 +38,11 @@
 | `delete` | ![delete](icons/alt/delete.png) |     d     | delete selected annotation                                                                    |
 | `edit`   |   ![edit](icons/alt/edit.png)   |     e     | edit selected region's label                                                                  |
 | `find`   |   ![find](icons/alt/find.png)   |     f     | make selected region flickering (use this function after select label in Roi Manager window) |
+
+### Tip
+If you want read utf-8 label file in windows 10, change imageJ.cfg like this
+```
+.
+jre\bin\javaw.exe
+-Dfile.encoding=UTF8 -Xmx24540m -cp ij.jar ij.ImageJ 
+```
