@@ -316,5 +316,6 @@ macro "Add EditText... [4]"{
 }
 
 macro "Add Keyboard... [5]"{
-    alt_direct_add('MR');
+    alt_direct_add('MRZ');
 }
+
