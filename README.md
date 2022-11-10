@@ -3,10 +3,10 @@
 - Original ALT is here (https://alpslabel.wordpress.com/2017/01/26/alt/)
 ### Install 
 1. Install ImageJ (https://imagej.nih.gov/ij/download.html) and start 
-2. Install ActionBar Plugin (https://imagejdocu.tudor.lu/doku.php?id=plugin:utilities:action_bar:start)
+2. Install ActionBar Plugin ([https://figshare.com/articles/dataset/Custom_toolbars_and_mini_applications_with_Action_Bar/3397603])
 3. Copy this repository under Plugin>ActionBar folder 
    - If there is not ActionBar folder under ImageJ>Plugins, create it    
-   -[option] If you want to use keyboard short cut, move ALT_toolset.txt to ImageJ/macro/toolsets/    
+   - [option] If you want to use keyboard short cut, move ALT_toolset.txt to ImageJ/macro/toolsets/    
 4. register this actionbar macro as auto run 
  - 4.1 Click Edit > Options > Startup   
  - 4.2 Paste this command  
